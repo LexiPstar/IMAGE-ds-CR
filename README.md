@@ -1,6 +1,6 @@
 # 📸 RNN‑Based Image Captioning with PyTorch
 
-[![Model Size](https://img.shields.io/badge/Model%20Size-~30MB-blue)](./checkpoints.pth)
+[![Model Size](https://img.shields.io/badge/Model%20Size-~30MB-blue)](./checkpoint.pth)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0.1-%23ee4c2c?logo=pytorch)](https://pytorch.org/)
 [![Epochs](https://img.shields.io/badge/Epochs-5-green)]()
 [![Final Loss](https://img.shields.io/badge/Final%20Loss-≈2.1-yellow)]()
