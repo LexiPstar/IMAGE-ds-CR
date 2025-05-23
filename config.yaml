@@ -1,0 +1,12 @@
+images_path: "./archive/images"
+captions_file: "./archive/captions.csv"
+freq_threshold: 5
+embed_size: 256
+hidden_size: 512
+train_CNN: False
+learning_rate: 0.001
+batch_size: 64
+epochs: 20
+log_step: 100
+checkpoint_path: "checkpoint.pth"
+loss_log_path: "loss_log.txt"
