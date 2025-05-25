@@ -23,7 +23,7 @@ def evaluate_model(model, dataloader, vocab, device, num_samples=1000):
     print(f"评估 {min(num_samples, len(dataloader))} 个样本...")
 
     with torch.no_grad():
-        for i, (images, captions, _) in enumerate(tqdm(dataloader)):
+        for i, (images, captions) in enumerate(tqdm(dataloader)):
             if i >= num_samples:
                 break
 
@@ -129,7 +129,7 @@ def main():
     try:
         load_checkpoint(model, None, 'best_model.pth')
     except:
-        print("警告: 无法加载最佳模型，使用默认检查点")
+        print("无法加载最佳模型，使用默认检查点")
         load_checkpoint(model, None, config['checkpoint_path'])
 
     # 评估模型
@@ -144,7 +144,7 @@ def main():
     # 显示一些示例
     print("\n生成示例:")
     model.eval()
-    for i, (images, captions, _) in enumerate(dataloader):
+    for i, (images, captions) in enumerate(dataloader):
         if i >= 5:  # 只显示5个示例
             break
 

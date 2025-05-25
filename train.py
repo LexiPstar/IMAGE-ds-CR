@@ -53,7 +53,7 @@ def train():
     dataloader = DataLoader(dataset, batch_size=config['batch_size'], shuffle=True, collate_fn=collate_fn)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"使用设备: {device}")
+    print(f"设备: {device}")
 
     model = CaptionModel(config['embed_size'], config['hidden_size'], len(vocab.word2idx),
                          train_CNN=config['train_CNN']).to(device)
