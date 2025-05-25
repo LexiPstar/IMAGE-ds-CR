@@ -6,7 +6,7 @@ hidden_size: 512
 train_CNN: False
 learning_rate: 0.001
 batch_size: 64
-epochs: 20
+epochs: 10
 log_step: 100
 checkpoint_path: "checkpoint.pth"
 loss_log_path: "loss_log.txt"

@@ -10,7 +10,7 @@
 
 ---
 
-## 📑 目录
+##  目录
 
 1. [项目结构](#项目结构)
 2. [环境与依赖](#环境与依赖)
@@ -34,12 +34,11 @@
 │   ├── dataset.py          # Flickr8kDataset
 │   └── vocab.py            # Vocabulary
 ├── models/
-│   ├── encoder.py
-│   ├── decoder.py
+│   ├── encoder.py          # 提取信息并输出固定格式向量
+│   ├── decoder.py          # 接收向量数据 生成下一词
 │   └── model.py            
 ├── utils.py                # save_checkpoint / load_checkpoint
 ├── train.py                # 训练入口
-├── inference_visualize.py  # 推理 + 批量可视化 (HTML/JPG)
 ├── visualize_loss.py       # 绘制 Loss 曲线
 ├── config.yaml             # 参数配置
 ├── checkpoints.pth         # 训练后权重
