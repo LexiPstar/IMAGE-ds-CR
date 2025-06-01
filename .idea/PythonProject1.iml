@@ -9,6 +9,7 @@
     <option name="namespacePackageFolders">
       <list>
         <option value="$MODULE_DIR$/models" />
+        <option value="$MODULE_DIR$/eval" />
       </list>
     </option>
   </component>

@@ -1,12 +1,12 @@
-import os
 import json
-import torch
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
-from PIL import Image
-import nltk
-from collections import Counter
+import os
 import pickle
+from collections import Counter
+import nltk
+import torch
+from PIL import Image
+from torch.utils.data import Dataset, DataLoader
+
 
 class Vocabulary:
     """

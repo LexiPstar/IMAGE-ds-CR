@@ -8,7 +8,7 @@ from models.model import ImageCaptioningModel
 from data.data_loader import Vocabulary, get_data_loader
 from training.train import train_model
 from eval.evaluate import evaluate_model, evaluate_metrics
-from inference import generate_caption, visualize_caption, load_image
+from inferences.inference import generate_caption, visualize_caption, load_image
 
 def main():
     parser = argparse.ArgumentParser(description='Image Captioning')

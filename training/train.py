@@ -1,13 +1,11 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.nn.utils.rnn import pack_padded_sequence
-import numpy as np
 import os
 import time
+import torch
+from torch.nn.utils.rnn import pack_padded_sequence
 from tqdm import tqdm
 
-def train_model(model, train_loader, val_loader, criterion, optimizer, 
+
+def train_model(model, train_loader, val_loader, criterion, optimizer,
                 num_epochs, device, save_dir='checkpoints'):
     """
     训练图像描述生成模型

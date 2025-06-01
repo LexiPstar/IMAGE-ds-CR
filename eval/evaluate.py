@@ -1,12 +1,11 @@
 import torch
-import torch.nn as nn
-from torch.nn.utils.rnn import pack_padded_sequence
-from tqdm import tqdm
-import numpy as np
 from nltk.translate.bleu_score import corpus_bleu
 from pycocoevalcap.cider.cider import Cider
 from pycocoevalcap.meteor.meteor import Meteor
 from pycocoevalcap.rouge.rouge import Rouge
+from torch.nn.utils.rnn import pack_padded_sequence
+from tqdm import tqdm
+
 
 def evaluate_model(model, data_loader, criterion, device):
     """
