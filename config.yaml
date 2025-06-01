@@ -1,12 +1,37 @@
+# 数据配置
 images_path: "./archive/images"
 captions_file: "./archive/captions.csv"
-freq_threshold: 5
-embed_size: 256
+vocab_path: "vocab.json"
+
+# 模型超参数
+embed_size: 512
 hidden_size: 512
-train_CNN: False
-learning_rate: 0.001
+attention_dim: 512
+freq_threshold: 5
+train_CNN: false
+
+# 训练超参数
+learning_rate: 0.0001
 batch_size: 64
-epochs: 10
+epochs: 50
+alpha_c: 1.0  # 注意力正则化系数
+
+# 训练配置
+checkpoint_path: "checkpoints/checkpoint.pth"
+best_model_path: "checkpoints/best_model.pth"
+loss_log_path: "logs/loss_log.txt"
 log_step: 100
-checkpoint_path: "checkpoint.pth"
-loss_log_path: "loss_log.txt"
+
+# 验证和测试
+validation_split: 0.2
+num_eval_samples: 1000
+
+# 工具配置
+use_wandb: false
+wandb_project: "image-captioning"
+save_frequency: 5
+
+# 推理配置
+beam_size: 5
+max_caption_length: 20
+temperature: 1.0
