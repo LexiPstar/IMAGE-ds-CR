@@ -24,7 +24,8 @@ def evaluate_single(image_path, encoder, decoder, vocab, transform, device, max_
         feature = encoder(image)
         output_ids = decoder.sample(feature, max_len=max_len)
 
-    caption = [vocab.idx2word[idx] for idx in output_ids if idx not in (vocab.stoi["<PAD>"], vocab.stoi["<START>"], vocab.stoi["<END>"])]
+    caption = [vocab.idx2word[idx] for idx in output_ids if idx not in (vocab.word2idx["<pad>"], vocab.word2idx["<start>"], vocab.word2idx["<end>"])]
+
     return " ".join(caption)
 
 
@@ -70,10 +71,10 @@ def evaluate_folder(config_path):
         score = sentence_bleu(
             [clean_caption(ref_caption).split()],
             clean_caption(pred_caption).split(),
-            smoothing_function=smooth
+            smoothing_function = smooth
         )
         print(f"[{img_name}]\nPred: {pred_caption}\nRef:  {ref_caption}\nBLEU: {score:.4f}\n")
         total_score += score
 
     avg_bleu = total_score / len(lines)
-    print(f"🔎 Average BLEU: {avg_bleu:.4f}")
+    print(f"Average BLEU: {avg_bleu:.4f}")
