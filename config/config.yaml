@@ -1,0 +1,27 @@
+"""
+配置文件：存储项目的所有配置参数
+"""
+
+# 数据配置
+DATA_CONFIG = {
+    'data_dir': 'archive/images',
+    'train_json': 'annotations/captions_train2014.json',
+    'val_json': 'annotations/captions_val2014.json',
+    'train_image_dir': 'train2014',
+    'val_image_dir': 'val2014',
+    'vocab_path': 'data/vocab.pkl',
+    'vocab_threshold': 5,  # 词汇表阈值，出现次数少于此值的单词将被忽略
+    'max_seq_length': 20,  # 生成标题的最大长度
+}
+
+# 模型配置
+MODEL_CONFIG = {
+    'embed_size': 256,     # 词嵌入维度
+    'hidden_size': 512,    # LSTM隐藏层维度
+    'num_layers': 1,       # LSTM层数
+    'dropout': 0.5,        # Dropout比率
+}
+
+# 训练配置
+TRAIN_CONFIG = {
+    'batch_size': 32
