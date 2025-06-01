@@ -1,117 +1,85 @@
+# training/train.py
+
 import os
-import time
 import torch
+import torch.nn as nn
+import torch.optim as optim
 from torch.nn.utils.rnn import pack_padded_sequence
 from tqdm import tqdm
 
+from models.model import EncoderCNN, DecoderRNN
+from data.data_loader import get_loader
 
-def train_model(model, train_loader, val_loader, criterion, optimizer,
-                num_epochs, device, save_dir='checkpoints'):
-    """
-    训练图像描述生成模型
-    """
-    # 创建保存检查点的目录
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-    
-    # 记录最佳验证损失
-    best_val_loss = float('inf')
-    
-    # 训练循环
-    for epoch in range(num_epochs):
-        start_time = time.time()
-        
-        # 训练阶段
-        model.train()
-        train_loss = 0.0
-        
-        # 使用tqdm显示进度条
-        train_progress = tqdm(train_loader, desc=f'Epoch {epoch+1}/{num_epochs} [Train]')
-        
-        for images, captions, lengths in train_progress:
-            # 将数据移到设备上
-            images = images.to(device)
-            captions = captions.to(device)
-            lengths = lengths.to(device)
-            
-            # 清零梯度
-            optimizer.zero_grad()
-            
-            # 前向传播
-            outputs = model(images, captions, lengths)
-            
-            # 计算损失（不包括<start>标记）
-            targets = pack_padded_sequence(captions, lengths, batch_first=True)[0]
+
+def train(config):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Load data
+    loader, dataset, vocab = get_loader(
+        image_folder=config["data"]["image_folder"],
+        captions_file=config["data"]["captions_file"],
+        batch_size=config["training"]["batch_size"],
+        freq_threshold=config["data"]["freq_threshold"],
+        shuffle=True
+    )
+
+    # Build model
+    encoder = EncoderCNN(config["model"]["embed_size"]).to(device)
+    decoder = DecoderRNN(
+        config["model"]["embed_size"],
+        config["model"]["hidden_size"],
+        len(vocab)
+    ).to(device)
+
+    # Loss and optimizer
+    criterion = nn.CrossEntropyLoss(ignore_index=0)
+    params = list(decoder.parameters()) + list(encoder.fc.parameters()) + list(encoder.bn.parameters())
+    optimizer = optim.Adam(params, lr=config["training"]["lr"])
+
+    # Resume from checkpoint
+    start_epoch = 0
+    if config["training"]["resume"] and os.path.exists(config["training"]["checkpoint_path"]):
+        checkpoint = torch.load(config["training"]["checkpoint_path"])
+        encoder.load_state_dict(checkpoint["encoder"])
+        decoder.load_state_dict(checkpoint["decoder"])
+        optimizer.load_state_dict(checkpoint["optimizer"])
+        start_epoch = checkpoint["epoch"] + 1
+        print(f"Resumed from epoch {start_epoch}")
+
+    # Training loop
+    for epoch in range(start_epoch, config["training"]["num_epochs"]):
+        encoder.train()
+        decoder.train()
+
+        loop = tqdm(loader, desc=f"Epoch [{epoch+1}/{config['training']['num_epochs']}]")
+        total_loss = 0
+
+        for imgs, captions, lengths in loop:
+            imgs, captions = imgs.to(device), captions.to(device)
+
+            features = encoder(imgs)
+            outputs = decoder(features, captions)
+
+            # Flatten for loss calculation
+            targets = pack_padded_sequence(captions[:, 1:], lengths=[l - 1 for l in lengths], batch_first=True, enforce_sorted=False)[0]
+            outputs = pack_padded_sequence(outputs, lengths=[l - 1 for l in lengths], batch_first=True, enforce_sorted=False)[0]
+
             loss = criterion(outputs, targets)
-            
-            # 反向传播和优化
+
+            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            
-            # 累计损失
-            train_loss += loss.item()
-            train_progress.set_postfix({'loss': loss.item()})
-        
-        # 计算平均训练损失
-        train_loss /= len(train_loader)
-        
-        # 验证阶段
-        model.eval()
-        val_loss = 0.0
-        
-        with torch.no_grad():
-            val_progress = tqdm(val_loader, desc=f'Epoch {epoch+1}/{num_epochs} [Val]')
-            
-            for images, captions, lengths in val_progress:
-                # 将数据移到设备上
-                images = images.to(device)
-                captions = captions.to(device)
-                lengths = lengths.to(device)
-                
-                # 前向传播
-                outputs = model(images, captions, lengths)
-                
-                # 计算损失
-                targets = pack_padded_sequence(captions, lengths, batch_first=True)[0]
-                loss = criterion(outputs, targets)
-                
-                # 累计损失
-                val_loss += loss.item()
-                val_progress.set_postfix({'loss': loss.item()})
-        
-        # 计算平均验证损失
-        val_loss /= len(val_loader)
-        
-        # 打印统计信息
-        elapsed_time = time.time() - start_time
-        print(f'Epoch {epoch+1}/{num_epochs} - '
-              f'Train Loss: {train_loss:.4f}, '
-              f'Val Loss: {val_loss:.4f}, '
-              f'Time: {elapsed_time:.2f}s')
-        
-        # 保存最佳模型
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            checkpoint = {
-                'epoch': epoch + 1,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'train_loss': train_loss,
-                'val_loss': val_loss,
-            }
-            torch.save(checkpoint, os.path.join(save_dir, 'best_model.pth'))
-            print(f'Model saved with val_loss: {val_loss:.4f}')
-        
-        # 定期保存检查点
-        if (epoch + 1) % 5 == 0:
-            checkpoint = {
-                'epoch': epoch + 1,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'train_loss': train_loss,
-                'val_loss': val_loss,
-            }
-            torch.save(checkpoint, os.path.join(save_dir, f'model_epoch_{epoch+1}.pth'))
-    
-    print('Training complete!')
-    return model
+
+            total_loss += loss.item()
+            loop.set_postfix(loss=loss.item())
+
+        # Save checkpoint
+        os.makedirs(os.path.dirname(config["training"]["checkpoint_path"]), exist_ok=True)
+        torch.save({
+            "encoder": encoder.state_dict(),
+            "decoder": decoder.state_dict(),
+            "optimizer": optimizer.state_dict(),
+            "epoch": epoch
+        }, config["training"]["checkpoint_path"])
+
+        print(f"Epoch {epoch+1} completed, loss: {total_loss / len(loader):.4f}")
