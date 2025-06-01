@@ -1,16 +1,18 @@
-# models/model.py
-
 import torch
 import torch.nn as nn
 import torchvision.models as models
+from torchvision.models import ResNet50_Weights
 
 
 class EncoderCNN(nn.Module):
     def __init__(self, embed_size, train_CNN=False):
         super(EncoderCNN, self).__init__()
-        resnet = models.resnet50(pretrained=True)
+        # 使用新版加载预训练权重
+        weights = ResNet50_Weights.DEFAULT if not train_CNN else None
+        resnet = models.resnet50(weights=weights)
+
         for param in resnet.parameters():
-            param.requires_grad = train_CNN  # 冻结 ResNet 权重
+            param.requires_grad = train_CNN  # 冻结或解冻 ResNet 权重
 
         modules = list(resnet.children())[:-1]  # 去掉最后一个全连接层
         self.resnet = nn.Sequential(*modules)
