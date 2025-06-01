@@ -4,8 +4,8 @@ import torch.optim as optim
 import torchvision.transforms as transforms
 import argparse
 import os
-from models import ImageCaptioningModel
-from data_loader import Vocabulary, get_data_loader
+from models.model import ImageCaptioningModel
+from data.data_loader import Vocabulary, get_data_loader
 from training.train import train_model
 from eval.evaluate import evaluate_model, evaluate_metrics
 from inference import generate_caption, visualize_caption, load_image
