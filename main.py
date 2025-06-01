@@ -6,6 +6,8 @@ import uvicorn
 from training.train import train
 from eval.evaluate import evaluate_folder
 from utils.utils import load_config
+import nltk
+nltk.download('punkt_tab')
 
 
 def main():
@@ -24,20 +26,23 @@ def main():
     args = parser.parse_args()
 
     if args.mode == "train":
-        print("🚀 开始训练...")
+        """ python main.py train --config config/config.yaml"""
+        print("开始训练...")
         config = load_config(args.config)
         train(config)
 
     elif args.mode == "eval":
-        print("🔎 开始评估...")
+        """python main.py eval --config config/config.yaml"""
+        print("开始评估...")
         evaluate_folder(args.config)
 
     elif args.mode == "serve":
-        print("🌐 启动 FastAPI 推理服务...")
+        """python main.py serve"""
+        print("启动 FastAPI 推理服务...")
         uvicorn.run("inferences.inference:app", host="0.0.0.0", port=8000, reload=True)
 
     else:
-        print("❌ 未知模式")
+        print("未知模式")
 
 
 if __name__ == "__main__":
