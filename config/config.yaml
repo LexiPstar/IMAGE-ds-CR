@@ -1,0 +1,19 @@
+data:
+  image_folder: "archive/Images"
+  captions_file: "archive/captions.csv"
+  freq_threshold: 5
+
+model:
+  embed_size: 256
+  hidden_size: 512
+
+training:
+  num_epochs: 10
+  batch_size: 64
+  lr: 0.001
+  resume: false
+  checkpoint_path: "experiments/checkpoint.pth"
+
+eval:
+  reference_captions: "archive/captions.csv"
+  image_folder: "archive/Images"
