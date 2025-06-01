@@ -113,7 +113,7 @@ def main():
     ])
 
     dataset = Flickr8kDataset(config['images_path'], config['captions_file'], vocab, transform)
-    # 这里可能需要分割数据集，暂时使用全集的子集
+    # 可能需要分割数据集，暂时使用全集的子集
     dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
