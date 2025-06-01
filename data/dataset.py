@@ -32,8 +32,8 @@ class ImageCaptionDataset(Dataset):
         if self.transform is not None:
             image = self.transform(image)
 
-        numericalized = [self.vocab.stoi["<SOS>"]]
+        numericalized = [self.vocab.stoi["<START>"]]
         numericalized += self.vocab.numericalize(caption)
-        numericalized.append(self.vocab.stoi["<EOS>"])
+        numericalized.append(self.vocab.stoi["<END>"])
 
         return image, torch.tensor(numericalized)
