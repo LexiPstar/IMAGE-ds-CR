@@ -1,19 +1,19 @@
 data:
-  image_folder: "archive/Images"
-  captions_file: "archive/captions.csv"
-  freq_threshold: 5
+  image_folder: "archive/Images"  # 图像数据所在的文件夹路径
+  captions_file: "archive/captions.csv"  # 图像描述文件的路径
+  freq_threshold: 5  # 词汇频率阈值，低于该阈值的词汇将被忽略
 
 model:
-  embed_size: 256
-  hidden_size: 512
+  embed_size: 256  # 词嵌入的维度
+  hidden_size: 512  # 循环神经网络隐藏层的维度
 
 training:
-  num_epochs: 1
-  batch_size: 64
-  lr: 0.001
-  resume: false
-  checkpoint_path: "experiments/checkpoint.pth"
+  num_epochs: 1  # 训练的轮数
+  batch_size: 64  # 每个批次的样本数量
+  lr: 0.001  # 学习率
+  resume: false  # 是否从之前的检查点继续训练
+  checkpoint_path: "experiments/checkpoint.pth"  # 检查点文件的保存路径
 
 eval:
-  reference_captions: "archive/captions.csv"
-  image_folder: "archive/Images"
+  reference_captions: "archive/captions.csv"  # 评估时使用的参考描述文件路径
+  image_folder: "archive/Images"  # 评估时使用的图像文件夹路径
