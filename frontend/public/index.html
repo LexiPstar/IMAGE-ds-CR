@@ -1,0 +1,29 @@
+<input type="file" id="fileInput" />
+<button onclick="upload()">Upload</button>
+<p id="caption"></p>
+
+<script>
+async function upload() {
+  const file = document.getElementById("fileInput").files[0];
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/predict", {
+      method: "POST",
+      body: formData
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("Server error:", err);
+      return;
+    }
+
+    const data = await res.json();
+    document.getElementById("caption").innerText = data.caption;
+  } catch (err) {
+    console.error("Fetch error:", err);
+  }
+}
+</script>

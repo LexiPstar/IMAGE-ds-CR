@@ -10,6 +10,8 @@ import torch
 from PIL import Image
 from torch.utils.data import Dataset
 
+from data.vocabulary import Vocabulary
+
 
 class ImageCaptionDataset(Dataset):
     def __init__(self, root_dir, captions_file, vocab, transform=None):
@@ -32,8 +34,8 @@ class ImageCaptionDataset(Dataset):
         if self.transform is not None:
             image = self.transform(image)
 
-        numericalized = [self.vocab.stoi["<START>"]]
+        numericalized = [self.vocab.stoi[Vocabulary.START_TOKEN]]
         numericalized += self.vocab.numericalize(caption)
-        numericalized.append(self.vocab.stoi["<END>"])
+        numericalized.append(self.vocab.stoi[Vocabulary.END_TOKEN])
 
         return image, torch.tensor(numericalized)

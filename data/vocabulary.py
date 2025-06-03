@@ -5,14 +5,23 @@ import pickle
 from collections import Counter
 
 class Vocabulary:
-    def __init__(self, freq_threshold=1):
-        """
-        词汇表初始化，传入词频阈值，低于该频率的词会被过滤掉。
-        """
-        self.freq_threshold = freq_threshold
+    PAD_TOKEN = "<PAD>"
+    START_TOKEN = "<START>"
+    END_TOKEN = "<END>"
+    UNK_TOKEN = "<UNK>"
 
-        self.itos = {0: "<PAD>", 1: "<START>", 2: "<END>", 3: "<UNK>"}  # id->word
-        self.stoi = {v: k for k, v in self.itos.items()}                # word->id
+    def __init__(self, freq_threshold=5):
+        self.itos = {
+            0: self.PAD_TOKEN,
+            1: self.START_TOKEN,
+            2: self.END_TOKEN,
+            3: self.UNK_TOKEN,
+        }
+        self.stoi = {v: k for k, v in self.itos.items()}
+        self.freq_threshold = freq_threshold
+        self.word_freq = Counter()
+        self.index = 4  # 下一个空位 index
+
 
     def tokenizer(self, text):
         return nltk.tokenize.word_tokenize(text.lower())

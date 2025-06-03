@@ -7,11 +7,26 @@ import torch.optim as optim
 from torch.nn.utils.rnn import pack_padded_sequence
 from tqdm import tqdm
 
+from data.vocabulary import Vocabulary
 from models.model import EncoderCNN, DecoderRNN
 from data.data_loader import get_loader
 
+import logging
+
+def setup_logger(log_path):
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[
+            logging.FileHandler(log_path),
+            logging.StreamHandler()
+        ]
+    )
 
 def train(config):
+    setup_logger(config["training"]["log_path"])
+    logging.info("Training started.")
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Load data
@@ -32,7 +47,9 @@ def train(config):
     ).to(device)
 
     # Loss and optimizer
-    criterion = nn.CrossEntropyLoss(ignore_index=0)
+    pad_idx = vocab.stoi[Vocabulary.PAD_TOKEN]
+    criterion = nn.CrossEntropyLoss(ignore_index=pad_idx)
+
     params = list(decoder.parameters()) + list(encoder.fc.parameters()) + list(encoder.bn.parameters())
     optimizer = optim.Adam(params, lr=config["training"]["lr"])
 
@@ -44,7 +61,8 @@ def train(config):
         decoder.load_state_dict(checkpoint["decoder"])
         optimizer.load_state_dict(checkpoint["optimizer"])
         start_epoch = checkpoint["epoch"] + 1
-        print(f"Resumed from epoch {start_epoch}")
+        logging.info(f"Resumed from epoch {start_epoch}")
+
 
     # Training loop
     for epoch in range(start_epoch, config["training"]["num_epochs"]):
@@ -82,4 +100,4 @@ def train(config):
             "epoch": epoch
         }, config["training"]["checkpoint_path"])
 
-        print(f"Epoch {epoch+1} completed, loss: {total_loss / len(loader):.4f}")
+        logging.info(f"Epoch {epoch + 1} completed, loss: {total_loss / len(loader):.4f}")
