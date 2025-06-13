@@ -12,15 +12,15 @@ class collate_fn:
     def __init__(self, pad_idx):
         """
         初始化 collate 函数
-        :param pad_idx: 填充标记的索引
+        param pad_idx: 填充标记的索引
         """
         self.pad_idx = pad_idx
 
     def __call__(self, batch):
         """
         对一个批次的数据进行处理
-        :param batch: 一个批次的数据
-        :return: 处理后的图像张量、描述张量和描述长度列表
+        param batch: 一个批次的数据
+        return: 处理后的图像张量、描述张量和描述长度列表
         """
         # 分离图像和描述
         images = [item[0] for item in batch]
